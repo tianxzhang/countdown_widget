@@ -18,9 +18,9 @@ class _CountdownWidgetState extends State<CountdownWidget>
   late AnimationController controller;
   bool finish = false;
   late double current;
-
+  TextEditingController timeController = TextEditingController();
   _CountdownWidgetState(this.timeout);
-
+  bool started = false;
   int timeout;
 
   String get timerString {
@@ -31,9 +31,9 @@ class _CountdownWidgetState extends State<CountdownWidget>
   void startOrder() {
     controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: this.timeout),
+      duration: Duration(seconds: timeout),
     );
-    controller.reverse(from: 1);
+    // controller.reverse(from: 1);
     current = controller.value * 10;
 
     controller.addStatusListener((status) {
@@ -73,6 +73,128 @@ class _CountdownWidgetState extends State<CountdownWidget>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Offstage(
+          offstage: finish,
+          child: Container(
+            margin: EdgeInsets.only(top: 100.h),
+            width: 327.w,
+            height: 56.h,
+            decoration: new BoxDecoration(
+                border: Border.all(
+                    color: Colors.orange)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(child: Container(
+                    child: TextField(
+                      controller: timeController,
+                      keyboardType: TextInputType.number,
+                      cursorColor: Colors.black,
+                      //设置光标
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderSide:
+                              BorderSide(color: Colors.transparent)),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                          hintText: "请输入倒计时时间",
+                          hintStyle: new TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black)),
+                      maxLines: 1,
+                      //最大行数
+                      autofocus: false,
+                      //是否自动对焦
+                      obscureText: false,
+                      //是否是密码
+//                  textAlign: TextAlign.center,//文本对齐方式
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black),
+                      //输入文本的样式
+                      onChanged: (text) {
+
+                      },
+                      onSubmitted: (text) {
+                        print('submit $text');
+                        // FocusScope.of(context).requestFocus(FocusNode());
+                      },
+                    ))),
+                InkWell(
+                  child: Container(
+                      width: 57.w,
+                      height: 56.w,
+                      color: Colors.orange,
+                      alignment: Alignment.center,
+                      child: Baseline(
+                        baseline: 10.h,
+                        baselineType: TextBaseline.alphabetic,
+                        child: Text("OK",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                      )
+                  ),
+                  onTap: () {
+                    setState(() {
+                      timeout = int.parse(timeController.text);
+                      started = true;
+                      controller.duration = Duration(seconds: timeout);
+                    });
+                    controller.reverse(from: 1);
+
+                  },
+                ),
+
+              ],
+            ),
+          ),
+        ),
+        Offstage(
+          offstage: finish,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              InkWell(
+                child: Container(
+                  color: Colors.orange,
+                  width: 60.w,
+                  height: 50.h,
+                  child: Center(
+                    child: Text(started ? "暂停" : "开始"),
+                  ),
+                ),
+                onTap: () {
+                  if(started) {
+                    controller.stop();
+                  }else {
+                    controller.reverse();
+                  }
+                  setState(() {
+                    started = !started;
+                  });
+                },
+              )
+            ],
+          ),
+        ),
         !finish
             ? Container(
                 child: AnimatedBuilder(

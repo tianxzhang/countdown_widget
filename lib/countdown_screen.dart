@@ -19,6 +19,7 @@ class _CountdownScreenState extends State<CountdownScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
